@@ -1,49 +1,31 @@
 import random
 import math
 
-cidades = []
-menores_distancias = []
-
-cdd = int(random.randrange(4, 5)) #Determina a quantidade de cidades
-print(cdd, "Cidades")
-
-for a in range(0, cdd): #Adiciona as coordenadas das cidades
-    cidades.append( [ random.randint(0, 10), random.randint(0,10) ] )
-
-print(cidades)
-
 def getDist(p1, p2): # Distância entre 2 pontos
     #Verifica se p1 ou p2 não são do tipo list()
-    if not isinstance(p1, list) or not isinstance(p2, list):
-        print("Insira uma lista com dois pontos (X, Y).")
-        return
 
     #Retorna a distância entre as cidades (raiz da soma das potências dos eixos X e Y)
     return (math.sqrt( math.pow(int(p1[0]) - int(p2[0]), 2) + math.pow(int(p1[1]) - int(p2[1]), 2))) #Teorema de Pitágoras
 
 def fitness(lista): # Função Objetivo
-    #O Parâmetro "lista" recebe o cromossomo, onde cada cidade é um número
+    #O Parâmetro 'lista' recebe o cromossomo, onde cada cidade é um número
     soma = 0
+
+    print('Cromossomo -> ', lista)
     
-    #Verifica se o parâmetro "lista" não é do tipo list()
-    if not isinstance(lista, list):
-        print("Insira uma lista como parâmetro.")
-        return
-    
-    for a in range(0, len(lista)-1):
+    i = 0
+    while i != len(lista)-2:
         # print('fitness - 1 --------', lista) #lista = [0, 1, 3, 2]
 
-        soma += (int(getDist(cidades[lista[a]], cidades[lista[a+1]]))) 
+        soma += (int(getDist(cidades[lista[i]], cidades[lista[i+1]]))) 
         # print('fitness - 2 --------', cidades[lista[a]], cidades[lista[a+1]]) #cidades[lista[a]] -> cidades[lista[0]], onde a = 0 -> cidades[0]
                                                                     #cidades[lista[a+1]] -> cidades[lista[1]], onde a = 1 -> cidades[1] 
-        
-        if a == len(lista)-2:
-            break
+        i += 1
     return soma
 
-def generatePares(lista, quant): #! Essa função gera uma lista de populações, não entendi o porque
-    print('1 - ', lista)
-    print('2 - ', quant)
+def gera_pares(lista, quant): #! Essa função gera uma lista de populações, não entendi o porquê
+    # print('1 - ', lista)
+    # print('2 - ', quant)
     pares = []
     sorteados = []
 
@@ -69,7 +51,7 @@ def generatePares(lista, quant): #! Essa função gera uma lista de populações
                 done = False
                 pares.append(dois_a_dois)
                 break
-    print('PARES', pares)
+    # print('PARES', pares)
     return pares
                 
 def roletar(roleta, quantidade):   
@@ -79,10 +61,10 @@ def roletar(roleta, quantidade):
     # print(roleta)
     
     if not isinstance(roleta, list):
-        print("Insira uma lista como parâmetro.")
+        print('Insira uma lista como parâmetro.')
         return    
 
-    population = []
+    populacao = []
 
     incremented_roleta = roleta[0] # Cada indice da roleta representa uma porcentagem (decimal), que juntas fecham 1 (100%).
     spin = []
@@ -96,7 +78,7 @@ def roletar(roleta, quantidade):
 
     for a in range(0, quantidade):
         generated = random.random() #Retorna 0.0 - 1.0   
-        gpopulation = 0                         
+        gera_populacao = 0                         
         
         for a in range(0, len(spin)):
             # print('SPIN', spin[a])
@@ -104,18 +86,19 @@ def roletar(roleta, quantidade):
             if generated < spin[a]:
                 break
             else:
-                gpopulation += 1                
+                gera_populacao += 1                
                       
-        population.append(gpopulation)
-    print('POPULATION', population)
-    #print("roletado: ", population, "\n")
-    return population
+        populacao.append(gera_populacao)
 
-def crossover(pares, input_number): # Function de Crossover
+    # print('populacao', populacao)
+    #print('roletado: ', populacao, '\n')
+    return populacao
+
+def crossover(pares, populacao_inicial): # Function de Crossover
 
     cut_points = []
     
-    for a in range(0, int(input_number/2)):
+    for a in range(0, int(populacao_inicial/2)):
         cut_point = random.randint( int(len(cidades) / 2), len(cidades) - 1)  # corta do Ponto até o Fim        
         cut_points.append(int(cut_point))        
 
@@ -128,7 +111,7 @@ def crossover(pares, input_number): # Function de Crossover
     op = []
     index = 0
 
-    #print(population)
+    #print(populacao)
     #input()
     
     for a in range(0, len(pares)):
@@ -139,7 +122,7 @@ def crossover(pares, input_number): # Function de Crossover
 
                 index = pares[a][b] # Pega o Indice do Par na População gerada.         
 
-                cidade = population[b][c] # Pega a Cidade correspondente àquela população
+                cidade = populacao[b][c] # Pega a Cidade correspondente àquela população
                 op.append(cidade)
                 
                 if c <= cut_points[a]:
@@ -156,7 +139,7 @@ def crossover(pares, input_number): # Function de Crossover
             lp = []
             op = []            
             
-    print("\nPontos de Corte: ", cut_points, "(INDEXS)")
+    print('\nPontos de Corte: ', cut_points, '(INDEXS)')
 
     a = 0
     
@@ -171,21 +154,21 @@ def crossover(pares, input_number): # Function de Crossover
         a += 2
     return cut_pares          
 
-def mutation(pares): # Function para Mutação
-    mutation = 0.1
+def mutacao(pares): # Function para Mutação
+    mutacao = 0.1
     rand = 0    
     
     for a in range(0, len(pares)-1): # cada um dos pares
         for b in range(0, len(pares[a])): # cada uma das cidades do pares
             rand = random.random()
-            if rand <= mutation:
-                print("Houve mutação no Par ", a)
+            if rand <= mutacao:
+                print('Houve mutação no Par ', a)
                 pos_1 = random.randint(0, len(cidades)-1)
                 while True:
                     pos_2 = random.randint(0, len(cidades)-1)
                     if pos_1 != pos_2:
                         #print(len(pares[a]))
-                        #print(pos_1, ", ", pos_2)
+                        #print(pos_1, ', ', pos_2)
                         aux = pares[a][pos_1]
                         pares[a][pos_1] = pares[a][pos_2]
                         pares[a][pos_2] = aux                        
@@ -193,13 +176,13 @@ def mutation(pares): # Function para Mutação
 
     return pares
 
-def generateCities(): # Funcão para gerar indivíduos
+def gera_cidades(): # Funcão para gerar indivíduos
     selected_cities = []
     selected_cities.append(0) # Cidade de partida
     contador = 1
     
     while contador < len(cidades):
-        chosen_city = random.randint(1, len(cidades)-1) # Escolhe uma cidade da lista "cidades" #!Alterar para letras, invés de números
+        chosen_city = random.randint(1, len(cidades)-1) # Escolhe uma cidade da lista 'cidades' #!Alterar para letras, invés de números
     
         if not chosen_city in selected_cities: # Se a cidade sorteada não estiver na lista de selecionadas, adicione-a.
             selected_cities.append(chosen_city) # Adicionando à lista de cidades selecionadas a cidade sorteada.
@@ -211,7 +194,7 @@ def generateCities(): # Funcão para gerar indivíduos
     return selected_cities
 # ------------------------------------------------------------------- #
 
-# x) Os N individuos são gerados e adicionados à lista POPULATION.
+# x) Os N individuos são gerados e adicionados à lista populacao.
 # x) O procedimento COMPLETO é repetido X vezes, conforme o número informado pelo usuário.
 # -----------------------------------------------------------------------------------------
 
@@ -219,81 +202,73 @@ def generateCities(): # Funcão para gerar indivíduos
 # 2) Calcula-se o percentual de cada indivíduo para a mutação.
 # 3) Gira-se a roleta para sortear os INDIVIDUOS
 # 4) Faz-se o CROSSOVER a partir dos individuos anteriormente selecionados para gerar os pares através de pontos de corte.
-# 5) Faz-se a MUTATION 
+# 5) Faz-se a mutacao 
 
-gpopulation = []
-population = []
-
-distances = []
+cidades = []
+menores_distancias = []
+gera_populacao = []
+populacao = []
+distancias = []
 roleta = []
-inverted_distances = []
+distancias_invertidas = []
 
-input_number = 5 #int(input("\nDigite o número inicial da populaçao: ")) #! ???????
+populacao_inicial = 5 #int(input('\nDigite o número inicial da populaçao: '))
+vezes = 2 #int(input('Digite o número de vezes a executar o procedimento: '))
+cdd = 4 #int(input('Digite o número de cidades: ')) #int(random.randrange(4, 5)) #Determina a quantidade de cidades
 
-vezes = 2 #int(input("Digite o número de vezes a executar o procedimento: ")) #! ???????
+for i in range(0, cdd): #Adiciona as coordenadas das cidades
+    cidades.append( [ random.randint(0, 100), random.randint(0, 100) ] )
 
-for a in range(0, input_number): # Gera os N indivíduos iniciais
-    gpopulation = generateCities()
-    population.append(gpopulation) # Adiciona a lista de cidades sorteadas à lista de populações!
+print('\nLocalização das cidades -> ', cidades, '\n')
 
-# print('POPULATION', population)
+for i in range(0, populacao_inicial): # Gera os N indivíduos iniciais
+    gera_populacao = gera_cidades()
+    populacao.append(gera_populacao) # Adiciona a lista de cidades sorteadas à lista de populações.
 
-for a in range(0, vezes):
-    if a == 0: # O Fitness é realizado em cada indivíduo.
-        for a in range(0, len(population)): #TODO Pode apagar!!!!!
-            print(population[a])
-
-        for b in range(0, len(population)):
-            fitness_result = fitness(population[b]) # Soma das distâncias de todos os indivíduos.
-            distances.append(fitness_result) # Adiciona a distância entre todas as Cidades desta população à Lista de Distâncias            
-            # print('DISTANCES', distances)
-            inverted_distances.append(1 / fitness_result) # Distâncias invertidas (porcentagem).
-            # print('INVERTED_DISTANCES', inverted_distances)
+for i in range(0, vezes):
+    if i == 0: # O Fitness é realizado em cada indivíduo.
+        for j in range(0, len(populacao)):
+            fitness_result = fitness(populacao[j]) # Soma das distâncias de todos os indivíduos.
+            distancias.append(fitness_result) # Adiciona a distância entre todas as Cidades desta população à Lista de Distâncias            
+            # print('distancias', distancias)
+            distancias_invertidas.append(1 / fitness_result) # Distâncias invertidas (porcentagem).
+            # print('distancias_invertidas', distancias_invertidas)
 
     else:
-        for b in range(0, len(population)):
-            fitness_result = fitness(population[b])
-            distances.append(fitness_result)
-            inverted_distances.append(1 / fitness_result)
+        for j in range(0, len(populacao)):
+            fitness_result = fitness(populacao[j])
+            distancias.append(fitness_result)
+            distancias_invertidas.append(1 / fitness_result)
     
-    print("DISTANCIAS POS-CROSSOVER  --> ", distances, "\n")
-    menor_distancia = float(min(distances))
-    print(" -------> Menor Distancia: ", menor_distancia, "m." )
+    print('\nDISTANCIAS POS-CROSSOVER  --> ', distancias, '\n')
+    menor_distancia = float(min(distancias))
+    print('Menor Distancia: ', menor_distancia, 'metros')
     menores_distancias.append(menor_distancia)
 
-    for a in range(0, len(inverted_distances)):
-        roleta.append( (inverted_distances[a] / sum(inverted_distances)) ) # Distância invertida DIVIDIDO PELA Soma das distâncias invertidas.
+    for i in range(0, len(distancias_invertidas)):
+        roleta.append( (distancias_invertidas[i] / sum(distancias_invertidas)) ) # Distância invertida DIVIDIDO PELA Soma das distâncias invertidas.
 
-    rolled_population = roletar(roleta, input_number)
-    pares = generatePares(rolled_population, int(input_number/2))
-    #print("Pares: ",pares, "\n")    
+    rolled_populacao = roletar(roleta, populacao_inicial)
+    pares = gera_pares(rolled_populacao, int(populacao_inicial/2))
     
-    print("--------------------------------------------------------------------------------")
-    pares = mutation(crossover(pares, input_number))
-    for a in range(0, len(pares)):
-        print(pares[a])
-    gpopulation = []
+    print('--------------------------------------------------------------------------------')
+    pares = mutacao(crossover(pares, populacao_inicial))
+    for i in range(0, len(pares)):
+        print(pares[i])
+    gera_populacao = []
     
-    population = []
+    populacao = []
 
-    for a in range(0, len(pares)):    
-        population.append(pares[a])
+    for i in range(0, len(pares)):    
+        populacao.append(pares[i])
         
-
     fitness_result = []
-    #distances = []
     roleta = []
+
 print(cidades)
-print("\nFIM DO PROCEDIMENTO....")
-print("PROCEDIMENTO EXECUTADO ", vezes, " VEZES COM POP INICIAL DE ", input_number)
-print("\nMENOR DISTANCIA ENCONTRADA: ", min(menores_distancias), " m.")
 
-file = open('distancias.txt', 'w')
-file.close()
+print('\n--------------------------------------FIM----------------------------------------')
+print('\nPROCEDIMENTO EXECUTADO ', vezes, ' VEZES COM POP INICIAL DE ', populacao_inicial)
 
-file = open('distancias.txt', 'w')
-
-for a in range(0, len(menores_distancias)):
-    file.write(str(int(menores_distancias[a]))+"\n")
-
-file.close()
+print('\nDISTÂNCIAS ENCONTRADAS: ', menores_distancias)
+print('MENOR DISTÂNCIA ENCONTRADA: ', min(menores_distancias), ' metros\n')
