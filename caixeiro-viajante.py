@@ -1,7 +1,7 @@
 import random
 import math
 
-def getDist(p1, p2): # Distância entre 2 pontos
+def pegar_distancias(p1, p2): # Distância entre 2 pontos
     #Verifica se p1 ou p2 não são do tipo list()
 
     #Retorna a distância entre as cidades (raiz da soma das potências dos eixos X e Y)
@@ -17,7 +17,7 @@ def fitness(lista): # Função Objetivo
     while i != len(lista)-2:
         # print('fitness - 1 --------', lista) #lista = [0, 1, 3, 2]
 
-        soma += (int(getDist(cidades[lista[i]], cidades[lista[i+1]]))) 
+        soma += (int(pegar_distancias(cidades[lista[i]], cidades[lista[i+1]]))) 
         # print('fitness - 2 --------', cidades[lista[a]], cidades[lista[a+1]]) #cidades[lista[a]] -> cidades[lista[0]], onde a = 0 -> cidades[0]
                                                                     #cidades[lista[a+1]] -> cidades[lista[1]], onde a = 1 -> cidades[1] 
         i += 1
@@ -59,31 +59,28 @@ def roletar(roleta, quantidade):
     # roleta => Lista de distâncias invertidas, que representam partes decimais (EX: 0.2, 0.35, 0.70, 0.95, 0.99, 1.00)
     # quantidade => quantidade de indivíduos.
     # print(roleta)
-    
-    if not isinstance(roleta, list):
-        print('Insira uma lista como parâmetro.')
-        return    
 
     populacao = []
 
     incremented_roleta = roleta[0] # Cada indice da roleta representa uma porcentagem (decimal), que juntas fecham 1 (100%).
     spin = []
     
-    for a in range(0, len(roleta)):        
+    for i in range(0, len(roleta)):        
         spin.append(incremented_roleta)
-        incremented_roleta += roleta[a]  
-        # print('ROLETA', roleta[a])      
+        incremented_roleta += roleta[i]  
+        # print('ROLETA', roleta[a])   
+        #    
     # print('SPIN', spin)
     # print('SPIN', len(spin))
 
-    for a in range(0, quantidade):
+    for i in range(0, quantidade):
         generated = random.random() #Retorna 0.0 - 1.0   
         gera_populacao = 0                         
         
-        for a in range(0, len(spin)):
+        for j in range(0, len(spin)):
             # print('SPIN', spin[a])
             # print('GENERATED', generated)
-            if generated < spin[a]:
+            if generated < spin[j]:
                 break
             else:
                 gera_populacao += 1                
@@ -96,11 +93,11 @@ def roletar(roleta, quantidade):
 
 def crossover(pares, populacao_inicial): # Function de Crossover
 
-    cut_points = []
+    pontos_de_cortes = []
     
     for a in range(0, int(populacao_inicial/2)):
-        cut_point = random.randint( int(len(cidades) / 2), len(cidades) - 1)  # corta do Ponto até o Fim        
-        cut_points.append(int(cut_point))        
+        ponto_de_corte = random.randint( int(len(cidades) / 2), len(cidades) - 1)  # corta do Ponto até o Fim        
+        pontos_de_cortes.append(int(ponto_de_corte))        
 
     cut_pares = [] # Do Ponto de corte ao fim
     left_pares = [] # Do Ponto de corte ao inicio
@@ -125,7 +122,7 @@ def crossover(pares, populacao_inicial): # Function de Crossover
                 cidade = populacao[b][c] # Pega a Cidade correspondente àquela população
                 op.append(cidade)
                 
-                if c <= cut_points[a]:
+                if c <= pontos_de_cortes[a]:
                     cp.append(cidade)
                 else:
                     lp.append(cidade)
@@ -139,7 +136,7 @@ def crossover(pares, populacao_inicial): # Function de Crossover
             lp = []
             op = []            
             
-    print('\nPontos de Corte: ', cut_points, '(INDEXS)')
+    print('\nPontos de Corte: ', pontos_de_cortes, '(INDEXS)')
 
     a = 0
     
@@ -182,7 +179,7 @@ def gera_cidades(): # Funcão para gerar indivíduos
     contador = 1
     
     while contador < len(cidades):
-        chosen_city = random.randint(1, len(cidades)-1) # Escolhe uma cidade da lista 'cidades' #!Alterar para letras, invés de números
+        chosen_city = random.randint(1, len(cidades)-1) # Escolhe uma cidade da lista 'cidades'
     
         if not chosen_city in selected_cities: # Se a cidade sorteada não estiver na lista de selecionadas, adicione-a.
             selected_cities.append(chosen_city) # Adicionando à lista de cidades selecionadas a cidade sorteada.
@@ -212,9 +209,9 @@ distancias = []
 roleta = []
 distancias_invertidas = []
 
-populacao_inicial = 5 #int(input('\nDigite o número inicial da populaçao: '))
-vezes = 2 #int(input('Digite o número de vezes a executar o procedimento: '))
-cdd = 4 #int(input('Digite o número de cidades: ')) #int(random.randrange(4, 5)) #Determina a quantidade de cidades
+populacao_inicial = int(input('\nDigite o número inicial da população: '))
+vezes = int(input('Digite o número de vezes a executar o procedimento: '))
+cdd = int(input('Digite o número de cidades: ')) #int(random.randrange(4, 5)) #Determina a quantidade de cidades
 
 for i in range(0, cdd): #Adiciona as coordenadas das cidades
     cidades.append( [ random.randint(0, 100), random.randint(0, 100) ] )
